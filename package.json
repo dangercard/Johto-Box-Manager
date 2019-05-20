@@ -1,0 +1,15 @@
+{
+  "name": "Johto-Box-Manager",
+  "version": "1.0.0",
+  "description": "cli for managing your generation 2 PC boxes.",
+  "main": "index.js",
+  "repository": "https://github.com/dangercard/Johto-Box-Manager.git",
+  "author": "Alejandro Deloach",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "commander": "^2.20.0",
+    "inquirer": "^6.3.1",
+    "mongoose": "^5.5.9"
+  }
+}
