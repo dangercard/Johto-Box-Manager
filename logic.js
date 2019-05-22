@@ -6,7 +6,6 @@ const db = mongoose.connect('mongodb://localhost:27017/Johto-Box-Manager',{ useN
 
 
 const BoxPokemonSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     box:{type: Number, min:1, max:14},
     pokemon:{
              dexNum:{type: Number, min:1,max:251},
@@ -16,28 +15,31 @@ const BoxPokemonSchema = mongoose.Schema({
             },
 
     nickname:{type:String},
-    level:{type:Number, min:2,max:100}
+    level:{type:Number, min:2,max:100},
 });
 
 const BoxPokemon = mongoose.model('BoxPokemon', BoxPokemonSchema);
 
-const addBoxPokemon = (pokemon) => {
-    BoxPokemon.create(pokemon,(err)=> {
+const addBoxPokemon = (box,pokemon,nickname,level,mainMenu) => {
+    BoxPokemon.create({box,pokemon,nickname,level},(err)=> {
         assert.equal(null,err);
-        console.info('New Pokemon Added.');
+        console.info(`${pokemon.species} added to Box${box}!`);
         mongoose.disconnect();
+        mainMenu();
     });
+
+    // console.info(box)
 };
 
-const getBoxPokemon = (name) => {
-    const search = new RegExp(name, 'i');
-    Pokemon.find({$or: [{species: search }, {type1: search}, {type2: search}]})
-    .exec((err, pokemon) => {
-      assert.equal(null, err);
-      console.info(pokemon);
-      console.info(`${pokemon.length} matches`);
-      mongoose.disconnect();
-    });
-}
+// const getBoxPokemon = (name) => {
+//     const search = new RegExp(name, 'i');
+//     Pokemon.find({$or: [{species: search }, {type1: search}, {type2: search}]})
+//     .exec((err, pokemon) => {
+//       assert.equal(null, err);
+//       console.info(pokemon);
+//       console.info(`${pokemon.length} matches`);
+//       mongoose.disconnect();
+//     });
+// }
 
-module.exports = {addBoxPokemon,getBoxPokemon};
+module.exports = {addBoxPokemon/*,getBoxPokemon*/};

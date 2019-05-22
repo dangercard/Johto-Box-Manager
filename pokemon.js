@@ -1,82 +1,101 @@
 // Main application file.
 
 // Import all schema methods from the logic.js file.
-const {addBoxPokemon, getBoxPokemon} = require('./logic');
+const { P } = require("./lib/pokedex");
+const { B } = require("./lib/boxes");
+const { addBoxPokemon /*, getBoxPokemon*/ } = require("./logic");
 
-// Import prompts module.
-const prompts = require('./lib/prompts');
+// Import prompt modules.
+const selectorPrompt = require("./lib/selectorPrompt");
+const lvlPrompt = require("./lib/lvlPrompt");
+const nicknamePrompt = require("./lib/nicknamePrompt");
 
 // Function  choosePokemon:
-//      Prompts the selection of a pokemon 
-//      given the pokedex(array of all Pokemon objects). 
-async function choosePokemon(pokedex){
-    const chosenPokemon = await prompts({
-        // Prompt message:
-        message: "Choose the Pokemon you want to add.",
-        // Array of choices 
-        choices:pokedex
-    });
+//      Prompts the selection of a pokemon
+//      given the pokedex(array of all Pokemon objects).
+async function choosePokemon(pokedex) {
+  const chosenPokemon = await selectorPrompt({
+    // Prompt message:
+    message: "Choose the Pokemon you want to add.",
+    // Array of choices
+    choices: pokedex
+  });
 
-    // Return selected Pokemon object.
-    return chosenPokemon.value; 
+  // Return selected Pokemon object.
+  return chosenPokemon.value;
 }
-
 
 // Function chooseBox:
 //      Prompts the selection of a box
 //      given the list of Box numbers.
-async function chooseBox(boxes){
-    const chosenBox = await prompts({
-        // Prompt message.
-        message:"Choose the Box where you want to add the Pokemon.",
-        // Array of choices.
-        choices:boxes
-    });
-   
-    // Return selected Box.
-    return chosenBox.value;
+async function chooseBox(boxes) {
+  const chosenBox = await selectorPrompt({
+    // Prompt message.
+    message: "Choose the Box where you want to add the Pokemon.",
+    // Array of choices.
+    choices: boxes
+  });
+
+  // Return selected Box.
+  return chosenBox.value;
 }
 
-// Main menu function
-async function addPokemon(){
-    let pokedex = [
-        {title:"Chikorita", value:{dexNum: 1,species:"Chikorita",type1:"Grass"}},
-        {title:"Bayleaf", value:{dexNum: 2,species:"Bayleaf",type1:"Grass"}}
-    ];
+// Function addPokemon:
+//      Prompts for the Pokemon information
+//      needed to store it in a box.
+async function addPokemon() {
+  let Pokedex = P; // Gen 2 Pokedex.
+  let Boxes = B; // Gen 2 Boxes.
 
-    let boxes = [
-        {title:"Box1",value:1},
-        {title:"Box2",value:2}
-    ];
-    let chosenBox = await chooseBox(boxes); 
-    let chosenNewPokemon = await choosePokemon(pokedex);
-    console.info(`${chosenNewPokemon.species} added to Box${chosenBox}.`);
+  // Store the chosen box.
+  let chosenBox = await chooseBox(Boxes);
+  // Store the chosen pokemon.
+  let chosenNewPokemon = await choosePokemon(Pokedex);
+  //Store Pokemon nickname.
+  let pokemonNickname = await nicknamePrompt();
+  // Store Pokemon level.
+  let pokemonLevel = await lvlPrompt();
+
+  let done = await addBoxPokemon(
+    chosenBox,
+    chosenNewPokemon,
+    pokemonNickname.value,
+    pokemonLevel.value,
+    mainMenu
+  );
 }
 
-async function chooseOption(options){
-    const chosenOption = await prompts({
-        // Prompt message.
-        message:"Please select an option:",
-        // Array of choices.
-        choices:options
-    });
-   
-    // Return selected Box.
-    return chosenOption.value;
+// Function chooseOption:
+//      Prompts the selection of
+//      the available options.
+async function chooseOption(options) {
+  const chosenOption = await selectorPrompt({
+    // Prompt message.
+    message: "Please select an option:",
+    // Array of choices.
+    choices: options
+  });
+
+  // Return selected option.
+  return chosenOption.value;
 }
 
-async function main(){
-    let options = [ 
-        {title:"1.  Add Pokemon", value: addPokemon},
-        {title:"2.  Find Pokemon", value:"soon"}
-    ];
+// Function MainMenu:
+//      Starting point of application.
+//      Actions are selected here.
+async function mainMenu() {
+  // Array of options/actions
+  let options = [
+    { title: "1.  Add Pokemon", value: addPokemon },
+    { title: "2.  Find Pokemon", value: "soon" }
+  ];
 
-    let chosenOption = await chooseOption(options);
-    chosenOption();
-    
-    
+  // Wait for option selection.
+  let chosenOption = await chooseOption(options);
+
+  // Execute option.
+  chosenOption();
 }
 
-
-
-main();
+// Start application.
+mainMenu();
