@@ -1,35 +1,32 @@
 const mongoose = require('mongoose');
-const assert = require('assert');
 mongoose.Promise = global.Promise;
+
+// Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`
+// by default, you need to set it to false.
+mongoose.set('useFindAndModify', false);
 
 const db = mongoose.connect('mongodb://localhost:27017/Johto-Box-Manager',{ useNewUrlParser: true })
 
 
 const BoxPokemonSchema = mongoose.Schema({
     box:{type: Number, min:1, max:14},
-    pokemon:{
-             dexNum:{type: Number, min:1,max:251},
-             species:{type: String},
-             type1:{type: String},
-             type2:{type:String}
-            },
+    entities: {type: Number, min:0, max: 20},
+    data:[{
+            pokemon:{
+                    dexNum:{type: Number, min:1,max:251},
+                    species:{type: String},
+                    type1:{type: String},
+                    type2:{type:String}
+                    },
 
-    nickname:{type:String},
-    level:{type:Number, min:2,max:100},
+            nickname:{type:String},
+            level:{type:Number, min:2,max:100}
+                }]
 });
 
 const BoxPokemon = mongoose.model('BoxPokemon', BoxPokemonSchema);
 
-const addBoxPokemon = (box,pokemon,nickname,level,mainMenu) => {
-    BoxPokemon.create({box,pokemon,nickname,level},(err)=> {
-        assert.equal(null,err);
-        console.info(`${pokemon.species} added to Box${box}!`);
-        mongoose.disconnect();
-        mainMenu();
-    });
 
-    // console.info(box)
-};
 
 // const getBoxPokemon = (name) => {
 //     const search = new RegExp(name, 'i');
@@ -42,4 +39,4 @@ const addBoxPokemon = (box,pokemon,nickname,level,mainMenu) => {
 //     });
 // }
 
-module.exports = {addBoxPokemon/*,getBoxPokemon*/};
+module.exports = {BoxPokemon/*,getBoxPokemon*/};

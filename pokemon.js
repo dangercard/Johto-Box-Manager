@@ -3,12 +3,32 @@
 // Import all schema methods from the logic.js file.
 const { P } = require("./lib/pokedex");
 const { B } = require("./lib/boxes");
-const { addBoxPokemon /*, getBoxPokemon*/ } = require("./logic");
+const { BoxPokemon /*, getBoxPokemon*/ } = require("./logic");
+const assert = require('assert');
+
 
 // Import prompt modules.
 const selectorPrompt = require("./lib/selectorPrompt");
 const lvlPrompt = require("./lib/lvlPrompt");
 const nicknamePrompt = require("./lib/nicknamePrompt");
+
+async function addBoxPokemon(box,pokemon,nickname,level)
+{
+    BoxPokemon.findOneAndUpdate(
+        {box:box},
+        {
+            $inc:{entities:1},
+            $push:{data:{pokemon:pokemon, nickname:nickname, level:level}}
+        },
+        {upsert:true,new:true},
+        async (err) => {
+            assert.equal(null,err);
+            // mongoose.disconnect();
+            console.info(`${pokemon.species} added to Box${box}!`);
+            await mainMenu();
+        }
+    );
+};
 
 // Function  choosePokemon:
 //      Prompts the selection of a pokemon
@@ -17,7 +37,7 @@ async function choosePokemon(pokedex) {
   const chosenPokemon = await selectorPrompt({
     // Prompt message:
     message: "Choose the Pokemon you want to add.",
-    // Array of choices
+    // Array of choices.
     choices: pokedex
   });
 
@@ -29,6 +49,8 @@ async function choosePokemon(pokedex) {
 //      Prompts the selection of a box
 //      given the list of Box numbers.
 async function chooseBox(boxes) {
+  console.log(boxes);
+  
   const chosenBox = await selectorPrompt({
     // Prompt message.
     message: "Choose the Box where you want to add the Pokemon.",
@@ -56,7 +78,7 @@ async function addPokemon() {
   // Store Pokemon level.
   let pokemonLevel = await lvlPrompt();
 
-  let done = await addBoxPokemon(
+  await addBoxPokemon(
     chosenBox,
     chosenNewPokemon,
     pokemonNickname.value,
