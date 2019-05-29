@@ -28,15 +28,5 @@ const BoxPokemon = mongoose.model('BoxPokemon', BoxPokemonSchema);
 
 
 
-// const getBoxPokemon = (name) => {
-//     const search = new RegExp(name, 'i');
-//     Pokemon.find({$or: [{species: search }, {type1: search}, {type2: search}]})
-//     .exec((err, pokemon) => {
-//       assert.equal(null, err);
-//       console.info(pokemon);
-//       console.info(`${pokemon.length} matches`);
-//       mongoose.disconnect();
-//     });
-// }
 
-module.exports = {BoxPokemon/*,getBoxPokemon*/};
+module.exports = {BoxPokemon};
