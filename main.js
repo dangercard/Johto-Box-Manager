@@ -18,7 +18,7 @@ async function mainMenu() {
     // Array of options/actions.
     let options = [
       { title: "1.  Add Pokemon", value: addPokemon },
-      { title: "2.  Find Pokemon", value: searchPokemon }
+      { title: "2.  Search Pokemon", value: searchPokemon }
     ];
 
     // Wait for option selection.

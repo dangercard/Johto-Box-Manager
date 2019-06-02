@@ -2,7 +2,7 @@
 const { P } = require("../lib/pokedex");
 const { B } = require("../lib/boxes");
 const { BoxPokemon } = require("../schema");
-const assert = require('assert');
+// const assert = require('assert');
 
 // Import prompt modules.
 const selectorPrompt = require("../lib/prompts/selectorPrompt");
