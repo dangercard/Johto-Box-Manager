@@ -1,5 +1,7 @@
 const {BoxPokemon} = require("../schema");
 const assert = require('assert');
+const cFonts = require("cfonts");
+
 
 const searchPrompt = require("../lib/prompts/searchPrompt");
 
@@ -25,7 +27,17 @@ async function searchBoxPokemon(input)
     {
         const search = new RegExp(input, 'i');
         let match = input.toUpperCase();
-
+        process.stdout.write('\033c');
+        cFonts.say('Johto Box Manager', {
+            font: 'shade',
+            align: 'left',
+            colors: ['#fff','#000'],
+            background: 'transparent',
+            letterSpacing: 1,
+            lineHeight: 1,
+            space: true,
+            maxLength: '0'
+          });
         await BoxPokemon.find({
                 $or: 
                 [
@@ -45,28 +57,7 @@ async function searchBoxPokemon(input)
                     console.info(`In Box${i.box}:`);
                     let searchRes = i.data;
                     searchRes.forEach((p) => {
-                        let resMsg;
-                        let spec = (p.pokemon.species);
-                        let specUpper = spec.toUpperCase();
-                        let t1 = p.pokemon.type1;
-                        let t1Upper = t1.toUpperCase();
-                        let t2;
-                        let t2Upper = "";
-                        if(p.pokemon.type2 != undefined)
-                        {
-                            t2 = p.pokemon.type2;
-                            t2Upper = t2.toUpperCase();
-                            resMsg = `${spec} - ${t1} - ${t2}`;
-                        }
-                        else
-                        {
-                            resMsg = `${spec} - ${t1}`;
-                        }
-                        // nick = p.nickname ;
-                        if(specUpper.includes(match) || t1Upper.includes(match) || t2Upper.includes(match) /*|| nick.includes(input)*/)
-                        {
-                            console.info(resMsg);
-                        }  
+                       filterMatches(p,match);
                     });
                 });
             }
@@ -80,6 +71,32 @@ async function searchBoxPokemon(input)
     {
         throw Error(err);
     }
+}
+
+async function filterMatches(p,match)
+{
+    let resMsg;
+    let spec = (p.pokemon.species);
+    let specUpper = spec.toUpperCase();
+    let t1 = p.pokemon.type1;
+    let t1Upper = t1.toUpperCase();
+    let t2;
+    let t2Upper = "";
+    if(p.pokemon.type2 != undefined)
+    {
+        t2 = p.pokemon.type2;
+        t2Upper = t2.toUpperCase();
+        resMsg = `${spec} - ${t1} - ${t2}`;
+    }
+    else
+    {
+        resMsg = `${spec} - ${t1}`;
+    }
+    // nick = p.nickname ;
+    if(specUpper.includes(match) || t1Upper.includes(match) || t2Upper.includes(match) /*|| nick.includes(input)*/)
+    {
+        console.info(resMsg);
+    }  
 }
 
 // Export function called from main.js.

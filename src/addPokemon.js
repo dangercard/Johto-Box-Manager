@@ -54,8 +54,8 @@ async function addPokemon(callback) {
     });
 
     // Report new addition.
-    console.info(`Added ${chosenNewPokemon} to Box${chosenBox}!`)
-
+    process.stdout.write('\033c');
+    console.info(`Added ${chosenNewPokemon.species} to Box${chosenBox}!`)
     callback();
   }
   // Handle errors.

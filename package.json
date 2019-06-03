@@ -8,9 +8,11 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "cfonts": "^2.4.3",
     "commander": "^2.20.0",
     "inquirer": "^6.3.1",
     "mongoose": "^5.5.9",
-    "prompts": "^2.0.4"
+    "prompts": "^2.0.4",
+    "terminal-kit": "^1.28.0"
   }
 }
