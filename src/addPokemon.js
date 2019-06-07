@@ -2,6 +2,7 @@
 const { P } = require("../lib/pokedex");
 const { B } = require("../lib/boxes");
 const { BoxPokemon } = require("../schema");
+const {setHeader} = require("../lib/header");
 // const assert = require('assert');
 
 // Import prompt modules.
@@ -55,7 +56,8 @@ async function addPokemon(callback) {
 
     // Report new addition.
     process.stdout.write('\033c');
-    console.info(`Added ${chosenNewPokemon.species} to Box${chosenBox}!`)
+    await setHeader();
+    await console.info(`Added ${chosenNewPokemon.species} to Box${chosenBox}!`)
     callback();
   }
   // Handle errors.

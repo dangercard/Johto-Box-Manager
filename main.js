@@ -1,24 +1,16 @@
 // Main application file.
 const {addPokemon} = require("./src/addPokemon");
 const {searchPokemon} = require("./src/searchPokemon");
+const {setHeader} = require("./lib/header");
+// const {logOut} = require("./src/logOut");
 // Import prompt modules.
 const selectorPrompt = require("./lib/prompts/selectorPrompt");
-
-const cFonts = require("cfonts");
 
 // Start application.
 process.stdout.write('\033c');
 
-cFonts.say('Johto Box Manager', {
-  font: 'shade',
-  align: 'left',
-  colors: ['#fff','#000'],
-  background: 'transparent',
-  letterSpacing: 1,
-  lineHeight: 1,
-  space: true,
-  maxLength: '0'
-});
+setHeader();
+
 mainMenu().catch((err) => {
   console.error(err);
 });
@@ -33,6 +25,7 @@ async function mainMenu() {
     let options = [
       { title: "|  Add Pokemon     |", value: addPokemon },
       { title: "|  Search Pokemon  |", value: searchPokemon }
+      // { title: "|  Log Out  |", value: logOut }
     ];
     // Wait for option selection.
     let chosenOption = await chooseOption(options);
