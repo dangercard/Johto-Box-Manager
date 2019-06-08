@@ -3,7 +3,7 @@ const { P } = require("../lib/pokedex");
 const { B } = require("../lib/boxes");
 const { BoxPokemon } = require("../schema");
 const {setHeader} = require("../lib/header");
-// const assert = require('assert');
+const {output} = require("../lib/output");
 
 // Import prompt modules.
 const selectorPrompt = require("../lib/prompts/selectorPrompt");
@@ -23,24 +23,15 @@ async function addPokemon(callback) {
   
     // Store the chosen box.
     let chosenBox = await chooseBox(Boxes)
-    .catch((err) => {
-      console.error(err);
-    });
+    
     // Store the chosen pokemon.
     let chosenNewPokemon = await choosePokemon(Pokedex)
-    .catch((err) => {
-      console.error(err);
-    });
+    
     //Store Pokemon nickname.
     let pokemonNickname = await nicknamePrompt()
-    .catch((err) => {
-      console.error(err);
-    });
+    
     // Store Pokemon level.
     let pokemonLevel = await lvlPrompt()
-    .catch((err) => {
-      console.error(err);
-    });
   
     // Store new Pokemon in desired Box.
     await addBoxPokemon(
@@ -48,17 +39,15 @@ async function addPokemon(callback) {
       chosenNewPokemon,
       pokemonNickname.value,
       pokemonLevel.value
-    )
-    // Report errors.
-    .catch((err) => {
-      console.error(err);
-    });
-
+    );
+  
     // Report new addition.
-    process.stdout.write('\033c');
-    await setHeader();
-    await console.info(`Added ${chosenNewPokemon.species} to Box${chosenBox}!`)
-    callback();
+    process.stdout.write('\033c'); // Clear the screen.
+    await setHeader(); // Place header.
+
+    // output the message.
+    await output(`Added ${chosenNewPokemon.species} to Box${chosenBox}!`);
+    callback(); // Back to main menu.
   }
   // Handle errors.
   catch(err)
@@ -73,21 +62,15 @@ async function addPokemon(callback) {
 //      given the list of Box numbers.
 async function chooseBox(boxes) {
     // console.log(boxes);
-  try
-  {
-    const chosenBox = await selectorPrompt({
-      // Prompt message.
-      message: "Choose the Box where you want to add the Pokemon.",
-      // Array of choices.
-      choices: boxes
-    });
+  const chosenBox = await selectorPrompt({
+    // Prompt message.
+    message: "Choose the Box where you want to add the Pokemon.",
+    // Array of choices.
+    choices: boxes
+  });
   
-    // Return selected Box.
-    return chosenBox.value;
-  }
-  catch(err){
-    throw Error(err);
-  }
+  // Return selected Box.
+  return chosenBox.value; 
 }
 
 
@@ -95,64 +78,52 @@ async function chooseBox(boxes) {
 //      Prompts the selection of a pokemon
 //      given the pokedex(array of all Pokemon objects).
 async function choosePokemon(pokedex) {
-  try
-  {
-    const chosenPokemon = await selectorPrompt({
-      // Prompt message:
-      message: "Choose the Pokemon you want to add.",
-      // Array of choices.
-      choices: pokedex
-    });
+
   
-    // Return selected Pokemon object.
-    return chosenPokemon.value;
-  }
-  catch(err)
-  {
-    throw Error(err);
-  }
+  const chosenPokemon = await selectorPrompt({
+    // Prompt message:
+    message: "Choose the Pokemon you want to add.",
+    // Array of choices.
+    choices: pokedex
+  });
+  
+  // Return selected Pokemon object.
+  return chosenPokemon.value;
 }
 
 
 // Function addBoxPokemon:
 //      Inserts new Pokemon into
-//      i'ts corresponding box.
-        
+//      i'ts corresponding box.        
 async function addBoxPokemon(box,pokemon,nickname,level)
 {
-  try 
-  {
-    await BoxPokemon.findOneAndUpdate(
 
-      // Find condition.
-      {box:box}, 
+  await BoxPokemon.findOneAndUpdate(
+
+    // Find condition.
+    {box:box}, 
          
-      // Update:
-      {   
-        // Increment by 1.
-        $inc:{entities:1}, 
-        // Push new Pokemon into data array.
-        $push:{data:{pokemon:pokemon, nickname:nickname, level:level}}
+    // Update:
+    {   
+      // Increment by 1.
+      $inc:{entities:1}, 
+      // Push new Pokemon into data array.
+      $push:{data:{pokemon:pokemon, nickname:nickname, level:level}}
+    },
 
-      },
+    // Options
+    {
+      // If condition not met, 
+      // create a new entry that 
+      // meets it.
+      upsert:true,
 
-      // Options
-      {
-        // If condition not met, 
-        // create a new entry that 
-        // meets it.
-        upsert:true,
-
-        // Return modified
-        // version of this 
-        // document.
-        new:true
-      }
-    ); 
-  }
-  catch(err){
-    throw Error(err);
-  }
+      // Return modified
+      // version of this 
+      // document.
+      new:true
+    }
+  ); 
 };
 
 // Export function called from main.js.

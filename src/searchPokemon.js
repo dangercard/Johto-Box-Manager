@@ -1,8 +1,7 @@
 // Necessary Imports.
 const {BoxPokemon} = require("../schema");
-const assert = require('assert');
-// const cFonts = require("cfonts");
 const {setHeader} = require("../lib/header");
+const {output} = require("../lib/output");
 
 // Import prompt modules.
 const searchPrompt = require("../lib/prompts/searchPrompt");
@@ -38,76 +37,62 @@ async function searchPokemon(callback)
 //      the results and location of matches.
 async function searchBoxPokemon(input)
 {
-    try
-    {
-        // Create case insensitive regular 
-        // expression to search the database.
-        const search = new RegExp(input, 'i');
+    
+    // Create case insensitive regular 
+    // expression to search the database.
+    const search = new RegExp(input, 'i');
 
-        // Store the input in uppercase for later.
-        let match = input.toUpperCase();
+    // Store the input in uppercase for later.
+    let match = input.toUpperCase();
 
-        // Clear the screen.
-        process.stdout.write('\033c');
+    // Clear the screen.
+    process.stdout.write('\033c');
 
-        // Set Header.
-        await setHeader();
+    // Set Header.
+    await setHeader();
 
-        // Use mongoose find. There is probably a better way to do this, 
-        // but given my schema structure I'm forced to return the entire 
-        // box contents that have at least one match and filter it myself.
-        // Will probably change later.
-        await BoxPokemon.find({
+    // Use mongoose find. There is probably a better way to do this, 
+    // but given my schema structure I'm forced to return the entire 
+    // box contents that have at least one match and filter it myself.
+    // Will probably change later.
+    await BoxPokemon.find({
 
-                // Find matches in these fields:
-                $or: 
-                [
-                    {'data.pokemon.species':search},
-                    {'data.pokemon.type1': search},
-                    {'data.pokemon.type2':search},
-                    {'data.nickname':search}
-                ]
-        },
+        // Find matches in these fields:
+        $or: 
+        [
+            {'data.pokemon.species':search},
+            {'data.pokemon.type1': search},
+            {'data.pokemon.type2':search},
+            {'data.nickname':search}
+        ]
+    },
 
-        // Fields to return.
-        'box data.pokemon.species data.pokemon.type1 data.pokemon.type2 data.nickname',
-        (err,res) => {
-            try
-            {
-                // assert.equal(null,err);
-                // console.info(res);
+    // Fields to return.
+    'box data.pokemon.species data.pokemon.type1 data.pokemon.type2 data.nickname',
+    (err,res) => {
+        // console.info(res);
 
-                // For each Box containing a match:
-                res.forEach((i) => {
+        // For each Box containing a match:
+        res.forEach((i) => {
 
-                    // Output Box.
-                    console.info(`In Box${i.box}:`);
+            // Output Box.
+            console.info(`In Box${i.box}:`);
 
-                    // Get the array of Pokemon in said Box.
-                    let searchRes = i.data;
+            // Get the array of Pokemon in said Box.
+            let searchRes = i.data;
 
-                    // For each pokemon in th box:
-                    searchRes.forEach((p) => {
+            // For each pokemon in th box:
+            searchRes.forEach((p) => {
 
-                       // Call filterMatches function with each pokemon in box.
-                       filterMatches(p,match);
-                    });
-                });
-                // This block contains a nested for loop, which isn't ideal,
-                // but given the limited amount of data, I'm not worried
-                // about the O(n^2) complexity at the moment. Will be improved 
-                // on later, probably alongside a schema change :( .
-            }
-            catch(err)
-            {
-                throw Error(err);
-            } 
+                // Call filterMatches function with each pokemon in box.
+                filterMatches(p,match);
+            });
         });
-    }
-    catch(err)
-    {
-        throw Error(err);
-    }
+        // This block contains a nested for loop, which isn't ideal,
+        // but given the limited amount of data, I'm not worried
+        // about the O(n^2) complexity at the moment. Will be improved 
+        // on later, probably alongside a schema change :( .    
+    });
 }
 
 
@@ -138,14 +123,15 @@ async function filterMatches(p,match)
     {
         resMsg = `${spec} - ${t1}`; // Store response message.
     }
-    // nick = p.nickname ;
 
     // If Pokemon fields include the input (input is a substring of a field):
     if(specUpper.includes(match) || t1Upper.includes(match) || t2Upper.includes(match) /*|| nick.includes(input)*/)
     {
-        await console.info(resMsg); // Output matches.
+        await output(resMsg); // Output matches.
     }  
 }
+
+
 
 // Export function called from main.js.
 module.exports = {searchPokemon};

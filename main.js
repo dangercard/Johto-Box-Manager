@@ -2,15 +2,17 @@
 const {addPokemon} = require("./src/addPokemon");
 const {searchPokemon} = require("./src/searchPokemon");
 const {setHeader} = require("./lib/header");
-// const {logOut} = require("./src/logOut");
+const {logOut} = require("./src/logOut");
+
 // Import prompt modules.
 const selectorPrompt = require("./lib/prompts/selectorPrompt");
 
 // Start application.
-process.stdout.write('\033c');
+process.stdout.write('\033c'); // Clear screen on start.
 
-setHeader();
+setHeader(); // Call header.
 
+// Open Main Menu.
 mainMenu().catch((err) => {
   console.error(err);
 });
@@ -24,14 +26,14 @@ async function mainMenu() {
     // Array of options/actions.
     let options = [
       { title: "|  Add Pokemon     |", value: addPokemon },
-      { title: "|  Search Pokemon  |", value: searchPokemon }
-      // { title: "|  Log Out  |", value: logOut }
+      { title: "|  Search Pokemon  |", value: searchPokemon },
+      { title: "|  Log Out  |", value: logOut }
     ];
     // Wait for option selection.
     let chosenOption = await chooseOption(options);
 
     // Execute option.
-    chosenOption(mainMenu).catch((err) => {
+    await chosenOption(mainMenu).catch((err) => {
       console.error(err);
     });
   }
@@ -48,23 +50,16 @@ async function mainMenu() {
 //      Prompts the selection of
 //      the available options.
 async function chooseOption(options) {
-  try
-  {
-    const chosenOption = await selectorPrompt({
-      // Prompt message.
-      message: "Please select an option:",
-      // Array of choices.
-      choices: options
-    });
   
-    // Return selected option.
-    return chosenOption.value;
-  }
-  // Handle errors.
-  catch(err)
-  {
-    throw Error(err);
-  }
+  const chosenOption = await selectorPrompt({
+    // Prompt message.
+    message: "Please select an option:",
+    // Array of choices.
+    choices: options
+  });
+  
+  // Return selected option.
+  return chosenOption.value;
 }
 
 
