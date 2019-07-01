@@ -2,8 +2,9 @@
 const { P } = require("../lib/pokedex");
 const { B } = require("../lib/boxes");
 const { BoxPokemon } = require("../schema");
-const {setHeader} = require("../lib/header");
-const {output} = require("../lib/output");
+const { setHeader } = require("../lib/header");
+const { output } = require("../lib/util/output");
+const { chooseBox } = require("../lib/util/chooseBox");
 
 // Import prompt modules.
 const selectorPrompt = require("../lib/prompts/selectorPrompt");
@@ -16,23 +17,25 @@ const nicknamePrompt = require("../lib/prompts/nicknamePrompt");
 //      Prompts for the Pokemon information
 //      needed to store it in a box.
 async function addPokemon(callback) {
-  try
-  {
+  try {
     let Pokedex = P; // Gen 2 Pokedex.
     let Boxes = B; // Gen 2 Boxes.
-  
+
     // Store the chosen box.
-    let chosenBox = await chooseBox(Boxes)
-    
+    let chosenBox = await chooseBox(
+      "Choose the Box where you want to add the Pokemon.",
+      Boxes
+    );
+
     // Store the chosen pokemon.
-    let chosenNewPokemon = await choosePokemon(Pokedex)
-    
+    let chosenNewPokemon = await choosePokemon(Pokedex);
+
     //Store Pokemon nickname.
-    let pokemonNickname = await nicknamePrompt()
-    
+    let pokemonNickname = await nicknamePrompt();
+
     // Store Pokemon level.
-    let pokemonLevel = await lvlPrompt()
-  
+    let pokemonLevel = await lvlPrompt();
+
     // Store new Pokemon in desired Box.
     await addBoxPokemon(
       chosenBox,
@@ -40,97 +43,65 @@ async function addPokemon(callback) {
       pokemonNickname.value,
       pokemonLevel.value
     );
-  
+
     // Report new addition.
-    process.stdout.write('\033c'); // Clear the screen.
+    process.stdout.write("\033c"); // Clear the screen.
     await setHeader(); // Place header.
 
     // output the message.
     await output(`Added ${chosenNewPokemon.species} to Box${chosenBox}!`);
     callback(); // Back to main menu.
-  }
-  // Handle errors.
-  catch(err)
-  {
+  } catch (err) {
+    // Handle errors.
     throw Error(err);
   }
 }
-
-
-// Function chooseBox:
-//      Prompts the selection of a box
-//      given the list of Box numbers.
-async function chooseBox(boxes) {
-    // console.log(boxes);
-  const chosenBox = await selectorPrompt({
-    // Prompt message.
-    message: "Choose the Box where you want to add the Pokemon.",
-    // Array of choices.
-    choices: boxes
-  });
-  
-  // Return selected Box.
-  return chosenBox.value; 
-}
-
 
 // Function  choosePokemon:
 //      Prompts the selection of a pokemon
 //      given the pokedex(array of all Pokemon objects).
 async function choosePokemon(pokedex) {
-
-  
   const chosenPokemon = await selectorPrompt({
     // Prompt message:
     message: "Choose the Pokemon you want to add.",
     // Array of choices.
-    choices: pokedex
+    choices: pokedex,
   });
-  
+
   // Return selected Pokemon object.
   return chosenPokemon.value;
 }
 
-
 // Function addBoxPokemon:
 //      Inserts new Pokemon into
-//      i'ts corresponding box.        
-async function addBoxPokemon(box,pokemon,nickname,level)
-{
-
+//      i'ts corresponding box.
+async function addBoxPokemon(box, pokemon, nickname, level) {
   await BoxPokemon.findOneAndUpdate(
-
     // Find condition.
-    {box:box}, 
-         
+    { box: box },
+
     // Update:
-    {   
+    {
       // Increment by 1.
-      $inc:{entities:1}, 
+      $inc: { entities: 1 },
       // Push new Pokemon into data array.
-      $push:{data:{pokemon:pokemon, nickname:nickname, level:level}}
+      $push: { data: { pokemon: pokemon, nickname: nickname, level: level } },
     },
 
     // Options
     {
-      // If condition not met, 
-      // create a new entry that 
+      // If condition not met,
+      // create a new entry that
       // meets it.
-      upsert:true,
+      upsert: true,
 
       // Return modified
-      // version of this 
+      // version of this
       // document.
-      new:true
+      new: true,
     }
-  ); 
-};
+  );
+}
 
 // Export function called from main.js.
-module.exports = {addPokemon};
-
-
-
-
-
-
+module.exports = { addPokemon };

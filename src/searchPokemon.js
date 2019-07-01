@@ -1,7 +1,7 @@
 // Necessary Imports.
 const {BoxPokemon} = require("../schema");
 const {setHeader} = require("../lib/header");
-const {output} = require("../lib/output");
+const {output} = require("../lib/util/output");
 
 // Import prompt modules.
 const searchPrompt = require("../lib/prompts/searchPrompt");
@@ -37,7 +37,6 @@ async function searchPokemon(callback)
 //      the results and location of matches.
 async function searchBoxPokemon(input)
 {
-    
     // Create case insensitive regular 
     // expression to search the database.
     const search = new RegExp(input, 'i');
@@ -69,25 +68,37 @@ async function searchBoxPokemon(input)
 
     // Fields to return.
     'box data.pokemon.species data.pokemon.type1 data.pokemon.type2 data.nickname',
-    (err,res) => {
-        // console.info(res);
+    async (err,res) => {
+        
+        // Check for errors.
+        if(err) throw err;
 
-        // For each Box containing a match:
-        res.forEach((i) => {
+        if(res === undefined || res.length === 0)
+        {
+            await output("You have no Pokemon matching the given input.");
+        }
 
-            // Output Box.
-            console.info(`In Box${i.box}:`);
+        else
+        {
+            // For each Box containing a match:
+            res.forEach((i) => {
 
-            // Get the array of Pokemon in said Box.
-            let searchRes = i.data;
+                // Output Box.
+                console.info(`In Box${i.box}:`);
 
-            // For each pokemon in th box:
-            searchRes.forEach((p) => {
+                // Get the array of Pokemon in said Box.
+                let searchRes = i.data;
+                
 
-                // Call filterMatches function with each pokemon in box.
-                filterMatches(p,match);
+                // For each pokemon in th box:
+                searchRes.forEach((p) => {
+
+                    // Call filterMatches function with each pokemon in box.
+                    filterMatches(p,match);
+                });
             });
-        });
+        }
+        
         // This block contains a nested for loop, which isn't ideal,
         // but given the limited amount of data, I'm not worried
         // about the O(n^2) complexity at the moment. Will be improved 

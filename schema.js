@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise;
 // by default, you need to set it to false.
 mongoose.set('useFindAndModify', false);
 
-const db = mongoose.connect('mongodb://localhost:27017/Johto-Box-Manager',{ useNewUrlParser: true })
+mongoose.connect('mongodb://localhost:27017/Johto-Box-Manager',{ useNewUrlParser: true })
 
 
 const BoxPokemonSchema = mongoose.Schema({
@@ -21,7 +21,7 @@ const BoxPokemonSchema = mongoose.Schema({
 
             nickname:{type:String},
             level:{type:Number, min:2,max:100}
-                }]
+        }]
 });
 
 const BoxPokemon = mongoose.model('BoxPokemon', BoxPokemonSchema);
