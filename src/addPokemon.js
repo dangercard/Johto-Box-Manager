@@ -18,6 +18,8 @@ const nicknamePrompt = require("../lib/prompts/nicknamePrompt");
 //      needed to store it in a box.
 async function addPokemon(callback) {
   try {
+    await setHeader(); // Place header.
+
     let Pokedex = P; // Gen 2 Pokedex.
     let Boxes = B; // Gen 2 Boxes.
 
@@ -44,8 +46,6 @@ async function addPokemon(callback) {
       pokemonLevel.value
     );
 
-    // Report new addition.
-    process.stdout.write("\033c"); // Clear the screen.
     await setHeader(); // Place header.
 
     // output the message.

@@ -12,9 +12,13 @@ async function releasePokemon(callback) {
     let titledPokemon = [];
 
     if (boxes === undefined || boxes.length === 0) {
+      await setHeader(); // Place header.
+
       await output("You don't have any Pokemon in your Boxes.");
       callback();
     } else {
+      await setHeader(); // Place header.
+
       boxes.forEach((box) => {
         titledBoxes.push({ title: `Box ${box.box}`, value: box.box });
       });
@@ -27,12 +31,17 @@ async function releasePokemon(callback) {
       let pokemonInBox = await getBoxPokemon(chosenBox);
 
       pokemonInBox.forEach((poke) => {
-        titledPokemon.push({ title: poke.pokemon.species, value:{species:poke.pokemon.species, _id: poke._id }});
+        titledPokemon.push({
+          title: poke.pokemon.species,
+          value: { species: poke.pokemon.species, _id: poke._id },
+        });
       });
 
       let chosenPokemon = await chooseBoxPokemon(titledPokemon);
-      
+
       await releaseBoxPokemon(chosenBox, chosenPokemon.value._id);
+
+      await setHeader(); // Place header.
 
       await output(`${chosenPokemon.value.species} has been released!`);
 

@@ -9,12 +9,9 @@ const { logOut } = require("./src/logOut");
 const selectorPrompt = require("./lib/prompts/selectorPrompt");
 
 // Start application.
-process.stdout.write("\033c"); // Clear screen on start.
 
 // Call header.
-setHeader().catch((err) => {
-  console.error(err);
-});
+setHeader();
 
 // Open Main Menu.
 mainMenu().catch((err) => {

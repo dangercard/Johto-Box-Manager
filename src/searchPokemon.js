@@ -15,6 +15,8 @@ async function searchPokemon(callback)
 {
     try
     {
+        await setHeader(); // Place header.
+
         // Wait for user input.
         let input = await searchPrompt();
 
@@ -44,8 +46,6 @@ async function searchBoxPokemon(input)
     // Store the input in uppercase for later.
     let match = input.toUpperCase();
 
-    // Clear the screen.
-    process.stdout.write('\033c');
 
     // Set Header.
     await setHeader();
