@@ -3,7 +3,7 @@ const { addPokemon } = require("./src/addPokemon");
 const { searchPokemon } = require("./src/searchPokemon");
 const { releasePokemon } = require("./src/releasePokemon");
 const { setHeader } = require("./lib/header");
-const { logOut } = require("./src/logOut");
+const { logOut } = require("./lib/util/logOut");
 
 // Import prompt modules.
 const selectorPrompt = require("./lib/prompts/selectorPrompt");
