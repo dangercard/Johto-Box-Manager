@@ -21,12 +21,21 @@ async function addPokemon(callback) {
     await setHeader(); // Place header.
 
     let Pokedex = P; // Gen 2 Pokedex.
-    let Boxes = B; // Gen 2 Boxes.
+    let fullBoxes = await getFullBoxes(); // Get Boxes that are full.
+    let titledBoxes = B; // List of all boxes.
+
+    // If there are full boxes:
+    if (fullBoxes !== undefined && fullBoxes.length != 0) {
+      // Remove each full box from the list of all boxes:
+      fullBoxes.forEach((fullBox) => {
+        titledBoxes.splice(fullBox.box - 1, 1);
+      });
+    }
 
     // Store the chosen box.
     let chosenBox = await chooseBox(
-      "Choose the Box where you want to add the Pokemon.",
-      Boxes
+      "Choose the Box where you want to add the Pokemon. Boxes that are full are not shown.",
+      titledBoxes
     );
 
     // Store the chosen pokemon.
@@ -55,6 +64,30 @@ async function addPokemon(callback) {
     // Handle errors.
     throw Error(err);
   }
+}
+
+// Function getFullBoxes:
+//      Returns array of boxes
+//      that are full.
+async function getFullBoxes() {
+  let fullBoxes;
+
+  await BoxPokemon.find(
+    // Find condition.
+    { entities: { $gt: 19 } },
+
+    // Exclude id's and only return box number.
+    { _id: 0, box: 1 },
+    async (err, res) => {
+      // Check for errors.
+      if (err) throw err;
+
+      fullBoxes = res;
+    }
+  );
+
+  // Return the array.
+  return fullBoxes;
 }
 
 // Function  choosePokemon:
